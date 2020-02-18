@@ -115,7 +115,11 @@ public class LoginController {
     @GetMapping("/expire")
     public Object TokenExpire(@RequestParam("username")String username){
         String itoken=iToken.getToken();
+        if(!iToken.getUserInfo().getUsername().equals(username)){
 
+            redisUtil.remove(itoken);
+            return  MessageData.ofError();
+        }
         if(redisUtil.hasKey(itoken)){
             if(redisUtil.getExpire(itoken)>1){
                 redisUtil.expire(itoken,Constants.TOKEN_EXPIRE);//重新更新有效时间

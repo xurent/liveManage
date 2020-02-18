@@ -4,8 +4,8 @@ server:
 
 spring:
   datasource:
-    url: jdbc:mysql://111.230.9.18:3306/live?characterEncoding=UTF-8
-    username: linux
+    url: jdbc:mysql://localhost:3306/live?characterEncoding=UTF-8&serverTimezone=UTC
+    username: root
     password: 422817618
   jpa:
     hibernate:
@@ -14,7 +14,7 @@ spring:
 
 redis:
   database: 0
-  host: 111.230.9.18 # ��������
+  host: localhost # ��������
   port: 6379
   password:
   jedis:

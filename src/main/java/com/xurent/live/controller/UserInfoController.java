@@ -35,12 +35,13 @@ public class UserInfoController {
     @PostMapping("/updateUserInfo")
     public Object updateUserInfo(UserInfo userInfo){
 
+        System.out.println(userInfo.toString());
         if(userInfo!=null&&userInfo.getUsername()!=null){
 
             User u= (User) redisUtil.get(iToken.getToken());
             u.setNickName(userInfo.getNickName());
-            u.setIntroduction(u.getIntroduction());
-            u.setHeadImg(u.getHeadImg());
+            u.setIntroduction(userInfo.getIntroduction());
+            u.setHeadImg(userInfo.getHeadImg());
             userService.updateUserInfoByUsername(u);
             redisUtil.set(iToken.getToken(),u, Constants.TOKEN_EXPIRE);
             return MessageData.ofSuccess("编辑个人资料成功");

@@ -44,7 +44,7 @@ public class UserServicelmpl implements UserService {
     @Override
     public void updateUserInfoByUsername(User user) {
 
-        userDao.updateUserByUsername(user,user.getUserName());
+        userDao.save(user);
 
     }
 

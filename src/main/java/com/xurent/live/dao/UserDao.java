@@ -13,9 +13,7 @@ public interface UserDao extends JpaRepository<User,Integer> {
 
     public User getByPhoneAndPassword(String phone,String password);
 
-    @Modifying
-    @Query("update User  u set  u=?1 where u.userName=?2")
-    public void updateUserByUsername(User u,String username);
+
 
     @Modifying
     @Query("update User  u set  u.password=?1 where u.userName=?2")
