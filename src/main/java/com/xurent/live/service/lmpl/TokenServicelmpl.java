@@ -38,7 +38,7 @@ public class TokenServicelmpl implements TokenService {
         if(token!=null){
             User user= (User) redisUtil.get(token);
             if(user!=null){
-                UserInfo info=new UserInfo(user.getUserName(), user.getUserName(),user.getPhone(), user.getHeadImg(), user.getIntroduction());
+                UserInfo info=new UserInfo(user.getUserName(), user.getNickName(),user.getPhone(), user.getHeadImg(), user.getIntroduction());
                 return info;
             }
 

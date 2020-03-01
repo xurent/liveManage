@@ -14,7 +14,7 @@ public class Constants {
 
     public static final  int ROOMS_KIND_EXPIRE=60*60*24*10;//10天
 
-
+    public static final  String PLAY="live_";
 
 
 }

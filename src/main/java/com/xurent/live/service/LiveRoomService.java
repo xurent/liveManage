@@ -10,12 +10,13 @@ public interface LiveRoomService {
 
     public LiveRoom getRoomByUserName(String username);
 
-    public List<LiveRoom> getRoomsByKind(Integer kind);
+    public List<LiveRoom> getRoomsByKind(String kind);
 
     public Page<LiveRoom>getAll(Integer page,Integer size);
 
     public void updateRoom(LiveRoom room);
 
+    public void updateOnlineByRid(String rid);
 
-
+    public void updateSubByRid(String rid);
 }

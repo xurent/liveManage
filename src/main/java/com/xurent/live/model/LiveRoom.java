@@ -1,6 +1,8 @@
 package com.xurent.live.model;
 
+import com.xurent.live.model.out.UserInfo;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -22,13 +24,15 @@ public class LiveRoom implements Serializable {
 
     private String roomImg;   //房间封面
 
-    private Integer kind;    //分类
+    private String kind;    //分类
 
     private String announcement;//公告
-
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date date; //时间
 
-    private Integer state=-1; // -1未来创建 0未开播 1直播中
+    private Integer state=0; //  0未开播 1直播中
+
+    private Integer online=0; //在线人数
 
 
 }

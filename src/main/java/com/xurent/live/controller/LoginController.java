@@ -44,6 +44,7 @@ public class LoginController {
     @ResponseBody
     public Object login(@RequestParam("username") String phone, @RequestParam("password") String pwd , HttpServletResponse response, HttpServletRequest request){
 
+        System.out.println(phone+","+pwd);
         boolean correct=userService.checkPassword(phone,pwd);
 
         if(correct){
@@ -54,28 +55,25 @@ public class LoginController {
             return MessageData.ofSuccess("登录成功!",token);
         }
 
-        return  MessageData.ofError("登录失败!");
+        return  MessageData.ofError("密码错误!");
     }
 
 
     @ApiOperation(value = "请求注册",notes = "注册账号接口")
     @ResponseBody
     @PostMapping("/register")
-    public Object register(@RequestParam("password")String pwd,@RequestParam("username")String phone, @RequestParam("nickName")String name){
+    public Object register(@RequestParam("password")String pwd,@RequestParam("username")String phone,HttpServletResponse response){
 
         if(phone.isEmpty()||pwd.isEmpty()){
             return  MessageData.ofError("手机号和密码不能为null");
         }
-        if(name.isEmpty()){
-            return  MessageData.ofError("昵称不能为空!");
-        }
+
         if(userService.getByPhone(phone)!=null){
             return  MessageData.ofError("请勿重复注册");
         }
 
         User user=new User();
         user.setPassword(pwd);
-        user.setNickName(name);
         user.setPhone(phone);
         int number=(int)(Math.random()*10000000+1000000);
         while (userService.getUserByUserName(String.valueOf(number))!=null){
@@ -83,6 +81,9 @@ public class LoginController {
         }
         user.setUserName(String.valueOf(number));
         userService.Add(user);
+        String token=UUID.randomUUID().toString();
+        CookieUtils.setCookie(response,"update",token, Constants.TOKEN_EXPIRE);
+        redisUtil.set(token,user.getUserName(),Constants.TOKEN_EXPIRE);
 
         return  MessageData.ofSuccess("注册成功!",number);
     }
@@ -94,16 +95,18 @@ public class LoginController {
     public Object logout(HttpServletRequest request,HttpServletResponse response){
 
         String token = request.getHeader(Constants.TOKEN_STRING);
+        System.out.println(token);
         if(token==null){
             token = CookieUtils.getCookie(request.getCookies(),Constants.TOKEN_STRING);
         }
-        if(token==null)return MessageData.ofError("登出失败!");
+
+        if(token==null){return MessageData.ofError("登出失败!");}
         User u= (User) redisUtil.get(token);
         if(u!=null){
 
             CookieUtils.delCookie(request,response);
             redisUtil.remove(token);
-            MessageData.ofSuccess("登出成功!");
+           return MessageData.ofSuccess("登出成功!");
         }
 
 
@@ -113,17 +116,17 @@ public class LoginController {
     @ApiOperation(value = "登录状态",notes = "判断登录是否有效，用于自动登录")
     @ResponseBody
     @GetMapping("/expire")
-    public Object TokenExpire(@RequestParam("username")String username){
+    public Object TokenExpire(/*@RequestParam("username")String username*/){
         String itoken=iToken.getToken();
-        if(!iToken.getUserInfo().getUsername().equals(username)){
+      /*  if(!iToken.getUserInfo().getUsername().equals(username)){
 
             redisUtil.remove(itoken);
             return  MessageData.ofError();
-        }
+        }*/
         if(redisUtil.hasKey(itoken)){
             if(redisUtil.getExpire(itoken)>1){
                 redisUtil.expire(itoken,Constants.TOKEN_EXPIRE);//重新更新有效时间
-                return MessageData.ofSuccess("token有效");
+                return MessageData.ofSuccess("token有效",iToken.getUserInfo());
             }
         }
         return  MessageData.ofError();

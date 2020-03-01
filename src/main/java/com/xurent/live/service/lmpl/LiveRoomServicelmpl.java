@@ -6,10 +6,11 @@ import com.xurent.live.service.LiveRoomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-
+@Transactional
 @Service("liveRoomService")
 public class LiveRoomServicelmpl implements LiveRoomService {
 
@@ -24,7 +25,7 @@ public class LiveRoomServicelmpl implements LiveRoomService {
     }
 
     @Override
-    public List<LiveRoom> getRoomsByKind(Integer kind) {
+    public List<LiveRoom> getRoomsByKind(String kind) {
 
 
         return liveRoomDao.findAllByKind(kind);
@@ -41,5 +42,17 @@ public class LiveRoomServicelmpl implements LiveRoomService {
     @Override
     public void updateRoom(LiveRoom room) {
         liveRoomDao.saveAndFlush(room);
+    }
+
+    @Override
+    public void updateOnlineByRid( String rid) {
+
+        liveRoomDao.updateOnlineByRoomId(rid);
+
+    }
+
+    @Override
+    public void updateSubByRid(String rid) {
+        liveRoomDao.updateSubByRoomId(rid);
     }
 }
