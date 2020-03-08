@@ -25,4 +25,10 @@ public interface LiveRoomDao extends JpaRepository<LiveRoom,Integer> {
     @Modifying
     @Query("update  LiveRoom r set  r.online=r.online-1 where  r.username=?1 and r.online>0")
     void updateSubByRoomId(String rid);
+
+    @Query(value = "select * from tb_room where username in (?1)",nativeQuery = true)
+    List<LiveRoom> findAllByUid(List<String> ids);
+
+    @Query("update  LiveRoom r set r.state=?2 where  r.username=?1")
+    void updateState(String rid,Integer type);
 }

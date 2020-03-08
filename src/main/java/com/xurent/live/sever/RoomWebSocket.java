@@ -106,13 +106,16 @@ public class RoomWebSocket {
         switch (code){
             case 10001:
                 break;
-            case 10002: sendMessage(10002,user.getNickName()+"离开房间",object,rooms.get(roomName),session);
+            case 10002: sendMessage(10002,user.getNickName()+"离开房间",object,rooms.get(roomName));
+                        if(user.getUserName().equals(roomName)){
+                            WSUtils.roomServices.updateState(roomName,0);//不直播
+                        }
                 break;
             case 10003:
-                sendMessage(10003,user.getUserName()+"用户发送消息",object,rooms.get(roomName),session);
+                sendMessage(10003,user.getUserName()+"用户发送消息",object,rooms.get(roomName));
                 break;
             case 10004:
-                sendMessage(10004,user.getUserName()+"用户发送礼物",object,rooms.get(roomName),session);
+                sendMessage(10004,user.getUserName()+"用户发送礼物",object,rooms.get(roomName));
                 break;
         }
 
@@ -150,6 +153,11 @@ public class RoomWebSocket {
     public void onError(Session session, Throwable error,@PathParam("roomName")String RoomName,@PathParam("authcode") String authcode) {
 
         User user= (User)  WSUtils.redisUtils.get(authcode);
+        if(user==null){
+            error.printStackTrace();
+            log.error("用户发生错误");
+            return;
+        }
         log.error("房间"+RoomName+"的"+user.getUserName()+"用户发生错误");
         if(rooms.get(RoomName)!=null&&rooms.get(RoomName).contains(session)){
             rooms.get(RoomName).remove(session);
@@ -201,14 +209,11 @@ public class RoomWebSocket {
      *
      */
 
-    public void sendMessage(int code,String msg,Object data,Set<Session> room,Session session){
+    public void sendMessage(int code,String msg,Object data,Set<Session> room){
 
            Iterator<Session> it=room.iterator();
            while (it.hasNext()){
                Session user=it.next();
-
-                    if(session.equals(user))continue;
-
                    try {
                        JSONObject object=JSONObject.fromObject(MessageData.ofSuccess(code,msg,data));
                        user.getAsyncRemote().sendText(object.toString());
@@ -217,22 +222,34 @@ public class RoomWebSocket {
                    }
 
 
-
            }
 
 
     }
 
+    /**
+     * 不发自己
+     * @param code
+     * @param msg
+     * @param data
+     * @param room
+     * @param session
+     */
 
-    public void sendMessage(Object data,Set<Session> room,Session session){
+    public void sendMessage(int code,String msg,Object data,Set<Session> room,Session session){
 
         Iterator<Session> it=room.iterator();
         while (it.hasNext()){
             Session user=it.next();
-            if(!user.equals(session)){
-                session.getAsyncRemote().sendObject(data);
-
+            if(session.equals(user)) continue;
+            try {
+                JSONObject object=JSONObject.fromObject(MessageData.ofSuccess(code,msg,data));
+                user.getAsyncRemote().sendText(object.toString());
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+
+
 
         }
 

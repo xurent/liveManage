@@ -6,16 +6,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
+import java.util.Date;
 
 public class UploadFileUtil {
 
 
-    private static FileListner onFileListner;
-
-
-    public static void setOnFileListner(FileListner filename) {
-        onFileListner = filename;
-    }
 
     public static String getFileUrl(MultipartFile file, String name, int type, HttpServletRequest request){
 
@@ -44,12 +39,10 @@ public class UploadFileUtil {
 
             //被传上来的源文件名
             String file_Name=file.getOriginalFilename();
-            if(onFileListner!=null){
-                onFileListner.getFileName(file_Name);
-            }
             int pointIndex = file_Name.indexOf(".");                        //点号的位置
             String fileSuffix = file_Name.substring(pointIndex);             //截取文件后缀
-            String savedFileName =name.toString().concat(fileSuffix);
+            String newname=name+new Date().getTime();
+            String savedFileName =newname.toString().concat(fileSuffix);
             File filepath = new File(path, savedFileName);
             //判断路径是否存在，不存在则创建一个
             if (!filepath.getParentFile().exists()) {
@@ -59,7 +52,7 @@ public class UploadFileUtil {
             path="http://"+request.getServerName()+":"+request.getLocalPort()+"/uploadfiles/"+name;
             switch (type){
                 case 0:
-                    path=path+filepath.getName();
+                    path=path+"/"+filepath.getName();
                     //头像
                     break;
                 case 1:
@@ -86,11 +79,6 @@ public class UploadFileUtil {
 
 
 
-    public interface  FileListner{
-
-        public void getFileName(String filename);
-
-    }
 
 
 }

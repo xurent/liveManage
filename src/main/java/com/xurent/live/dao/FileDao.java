@@ -23,4 +23,6 @@ public interface FileDao extends JpaRepository<FileBean,Integer> {
     public List<FileBean> getFileAll();
 
 
+
+
 }

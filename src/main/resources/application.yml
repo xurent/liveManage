@@ -11,7 +11,12 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
-
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 512MB
+      max-request-size: 512MB
+#    database-platform: org.hibernate.dialect.MySQLDialect
 redis:
   database: 0
   host: localhost
@@ -24,15 +29,11 @@ redis:
       max-wait: 10000
   timeout: 5000
 
-  servlet:
-    multipart:
-      enabled: true
-      max-file-size: 4096MB
-      max-request-size: 4096MB
+
 
 liveDance:
   file:
     uploadpath:  /static/uploadfiles/
   bizId: 76466
   key:
-  playUrl:
+  playUrl: live.hexurong.xyz/live/

@@ -63,7 +63,14 @@ public class TokenServicelmpl implements TokenService {
     public String getToken() {
         HttpServletRequest request = this.getRequest();
         String Token=CookieUtils.getCookie(request.getCookies(), Constants.TOKEN_STRING);
+
         if(Token!=null){
+            return Token;
+        }
+        //不支持Cookie的情况
+        Token=request.getParameter("token");
+        if(Token!=null){
+            request.removeAttribute("token");
             return Token;
         }
 

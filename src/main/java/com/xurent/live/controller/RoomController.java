@@ -2,12 +2,19 @@ package com.xurent.live.controller;
 
 
 import com.xurent.live.common.Constants;
+import com.xurent.live.model.FocusAnchor;
 import com.xurent.live.model.LiveRoom;
 import com.xurent.live.model.LiveUrl;
+import com.xurent.live.model.User;
 import com.xurent.live.model.in.InputRoom;
 import com.xurent.live.model.message.MessageData;
+import com.xurent.live.model.out.OutFansInfo;
+import com.xurent.live.model.out.OutRoom;
+import com.xurent.live.model.out.UserInfo;
+import com.xurent.live.service.AnchorService;
 import com.xurent.live.service.LiveRoomService;
 import com.xurent.live.service.TokenService;
+import com.xurent.live.service.UserService;
 import com.xurent.live.utils.LiveCodeUtil;
 import com.xurent.live.utils.RedisUtil;
 import com.xurent.live.utils.UploadFileUtil;
@@ -40,16 +47,20 @@ public class RoomController {
     @Autowired
     private LiveCodeUtil liveCodeUtil;
 
+    @Autowired
+    private AnchorService anchorService;
+
+    @Autowired
+    private UserService userService;
+
+
     @GetMapping("/getAll")
     @ResponseBody
-    public  Object getRooms(@RequestParam(value = "page",defaultValue = "0",required = false)Integer page,
+    public  Object getRooms(@RequestParam(value = "page",defaultValue = "1",required = false)Integer page,
                             @RequestParam(value = "limit",defaultValue ="15",required = false)Integer size){
-
         System.out.println(page+","+size);
+        Page<OutRoom> rooms= liveRoomService.getAll(page,size);
 
-        Page<LiveRoom> rooms= liveRoomService.getAll(page,size);
-
-        System.out.println(rooms.toString());
 
         return MessageData.ofSuccess("从数据库获取成功",rooms);
     }
@@ -63,7 +74,7 @@ public class RoomController {
 
         LiveRoom r=liveRoomService.getRoomByUserName(userId);
         if(r==null){
-            return MessageData.ofSuccess("失败",0);
+            return MessageData.ofSuccess("失败");
         }
         System.out.println(r);
 
@@ -144,7 +155,8 @@ public class RoomController {
 
            if(urls==null){
                urls=liveCodeUtil.getUrls(room.getUsername(),7);
-               redisUtil.set(Constants.PLAY+room.getUsername(),urls,7);
+               redisUtil.set(Constants.PLAY+room.getUsername(),urls,Constants.TOKEN_EXPIRE);
+               System.out.println(urls.toString());
            }
 
            return MessageData.ofSuccess("直播初始化成功",urls);
@@ -169,5 +181,80 @@ public class RoomController {
         return MessageData.ofError("失败");
     }
 
+    /**
+     * 关注主播
+     * @param aid  主播ID
+     * @return
+     */
+
+    @ResponseBody
+    @GetMapping("likeAnchor")
+    public Object FoucusAnchor(@RequestParam("aid") String aid,@RequestParam("type") Integer type){
+
+        UserInfo u=iToken.getUserInfo();
+       User u2= userService.getUserByUserName(aid);
+
+        if((u==null||u2==null)){
+            return  MessageData.ofError();
+        }
+
+        if(type==0){
+            anchorService.UnLikeByUidAndAid(u.getUsername(),aid);
+        }else if(type==1){
+            FocusAnchor anchor=new FocusAnchor();
+            anchor.setAid(aid);
+            anchor.setUid(u.getUsername());
+            anchor.setDate(new Date());
+            anchorService.Like(anchor);
+
+        }
+        return  MessageData.ofSuccess();
+    }
+
+
+    @ResponseBody
+    @GetMapping("isFocus")
+    public Object getFoucus(@RequestParam("aid") String aid){
+        UserInfo info=iToken.getUserInfo();
+        if(anchorService.isFoucus(aid,info.getUsername())){
+
+            return MessageData.ofSuccess("已经关注",1);
+        }
+
+        return  MessageData.ofSuccess("未关注",0);
+    }
+
+    /**
+     *
+     * @param aid
+     * @param type  0 粉丝， 1打赏
+     * @return
+     */
+
+    @ResponseBody
+    @GetMapping("getTotal")
+    public Object getFansAndOther(@RequestParam("aid")String aid,@RequestParam("type") Integer type){
+
+        List<OutFansInfo> info=null;
+        if(type==0){
+
+          info=  anchorService.getFansByAid(aid);
+        }else if(type==1){
+
+            info=anchorService.getMoneyFans(aid);
+        }
+
+        return  MessageData.ofSuccess("成功!",info);
+    }
+
+
+    @ResponseBody
+    @GetMapping("getAnchors")
+    public Object getFocusAnchor(){
+
+        String uid=iToken.getUserInfo().getUsername();
+        List<OutRoom> rooms=liveRoomService.getFoucsRoom(uid);
+        return  MessageData.ofSuccess("成功!",rooms);
+    }
 
 }
