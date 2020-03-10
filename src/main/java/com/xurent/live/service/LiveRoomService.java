@@ -9,6 +9,8 @@ import java.util.List;
 public interface LiveRoomService {
 
 
+    public OutRoom getOutRoomByUserName(String username);
+
     public LiveRoom getRoomByUserName(String username);
 
     public List<LiveRoom> getRoomsByKind(String kind);

@@ -11,10 +11,7 @@ import com.xurent.live.model.message.MessageData;
 import com.xurent.live.model.out.OutFansInfo;
 import com.xurent.live.model.out.OutRoom;
 import com.xurent.live.model.out.UserInfo;
-import com.xurent.live.service.AnchorService;
-import com.xurent.live.service.LiveRoomService;
-import com.xurent.live.service.TokenService;
-import com.xurent.live.service.UserService;
+import com.xurent.live.service.*;
 import com.xurent.live.utils.LiveCodeUtil;
 import com.xurent.live.utils.RedisUtil;
 import com.xurent.live.utils.UploadFileUtil;
@@ -53,6 +50,9 @@ public class RoomController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private AcountService acountService;
+
 
     @GetMapping("/getAll")
     @ResponseBody
@@ -72,7 +72,7 @@ public class RoomController {
     public  Object getRoom(@RequestParam("userId") String userId){
 
 
-        LiveRoom r=liveRoomService.getRoomByUserName(userId);
+        OutRoom r=liveRoomService.getOutRoomByUserName(userId);
         if(r==null){
             return MessageData.ofSuccess("失败");
         }
@@ -169,7 +169,7 @@ public class RoomController {
 
 
     @ResponseBody
-    @GetMapping("getLiveUrl")
+    @GetMapping("/getLiveUrl")
     public Object getPlayUrl(@RequestParam("uid") String uid){
 
         LiveUrl urls= (LiveUrl) redisUtil.get(Constants.PLAY+uid);
@@ -188,7 +188,7 @@ public class RoomController {
      */
 
     @ResponseBody
-    @GetMapping("likeAnchor")
+    @GetMapping("/likeAnchor")
     public Object FoucusAnchor(@RequestParam("aid") String aid,@RequestParam("type") Integer type){
 
         UserInfo u=iToken.getUserInfo();
@@ -213,7 +213,7 @@ public class RoomController {
 
 
     @ResponseBody
-    @GetMapping("isFocus")
+    @GetMapping("/isFocus")
     public Object getFoucus(@RequestParam("aid") String aid){
         UserInfo info=iToken.getUserInfo();
         if(anchorService.isFoucus(aid,info.getUsername())){
@@ -232,7 +232,7 @@ public class RoomController {
      */
 
     @ResponseBody
-    @GetMapping("getTotal")
+    @GetMapping("/getTotal")
     public Object getFansAndOther(@RequestParam("aid")String aid,@RequestParam("type") Integer type){
 
         List<OutFansInfo> info=null;
@@ -249,12 +249,40 @@ public class RoomController {
 
 
     @ResponseBody
-    @GetMapping("getAnchors")
+    @GetMapping("/getAnchors")
     public Object getFocusAnchor(){
 
         String uid=iToken.getUserInfo().getUsername();
         List<OutRoom> rooms=liveRoomService.getFoucsRoom(uid);
         return  MessageData.ofSuccess("成功!",rooms);
     }
+
+
+    @ResponseBody
+    @PostMapping("/giveGift")
+    public Object GiveGift(@RequestParam("aid")String aid,@RequestParam("acount") long acount){
+
+        System.out.println(acount);
+        String uid=iToken.getUserInfo().getUsername();
+       long m= anchorService.GiveAcount(aid,uid,acount);
+       if(m>0){
+
+           return  MessageData.ofSuccess("成功!",m);
+       }
+
+        return  MessageData.ofError("余额不足!",0);
+    }
+
+
+    @ResponseBody
+    @GetMapping("/myAcount")
+    public Object getMymoney(){
+
+        long price=acountService.getAcount(iToken.getUserInfo().getUsername());
+
+        return MessageData.ofSuccess("成功",price);
+
+    }
+
 
 }

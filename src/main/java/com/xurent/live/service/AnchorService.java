@@ -1,7 +1,6 @@
 package com.xurent.live.service;
 
 import com.xurent.live.model.FocusAnchor;
-import com.xurent.live.model.LiveRoom;
 import com.xurent.live.model.out.OutFansInfo;
 import com.xurent.live.model.out.UserInfo;
 
@@ -44,6 +43,9 @@ public interface AnchorService {
     public List<OutFansInfo> getMoneyFans(String aid);
 
     public boolean isFoucus(String aid,String uid);
+
+
+    public long GiveAcount(String aid,String uid,long acount);
 
 
 }

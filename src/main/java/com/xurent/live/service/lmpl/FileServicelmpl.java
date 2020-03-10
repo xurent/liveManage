@@ -46,7 +46,7 @@ public class FileServicelmpl implements FileService {
     }
 
     @Override
-    public List<FileBean> getFilesByType(String type) {
+    public List<FileBean> getFilesByType(Integer type) {
 
         return fileDao.getByType(type);
     }
@@ -65,13 +65,20 @@ public class FileServicelmpl implements FileService {
     @Override
     public void Collection(CollectionWorks works) {
 
-        collectionDao.save(works);
+        if(!isCollect(works.getUid(),works.getWorkId())){
+            collectionDao.save(works);
+            fileDao.updateLikeNumberByFId(works.getWorkId(),1);
+        }
 
     }
 
     @Override
     public void UnCollection(String uid, Integer wid) {
-        collectionDao.deleteByWorkIdAndUid(wid,uid);
+        if(isCollect(uid,wid)){
+            collectionDao.deleteByWorkIdAndUid(wid,uid);
+            fileDao.updateLikeNumberByFId(wid,-1);
+        }
+
     }
 
     @Override
@@ -92,5 +99,14 @@ public class FileServicelmpl implements FileService {
     @Override
     public List<UserInfo> getPeopleByWorkId(Integer wid) {
         return null;
+    }
+
+    @Override
+    public boolean isCollect(String uid, Integer wid) {
+
+        if(collectionDao.getByUidAndWorkId(uid,wid)!=null){
+            return true;
+        }
+        return false;
     }
 }

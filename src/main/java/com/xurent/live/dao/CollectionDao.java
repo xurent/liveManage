@@ -18,4 +18,7 @@ public interface CollectionDao extends JpaRepository<CollectionWorks,Integer> {
 
     public void deleteByWorkIdAndUid(Integer wid,String uid);
 
+    public CollectionWorks getByUidAndWorkId(String uid,Integer wid);
+
+
 }

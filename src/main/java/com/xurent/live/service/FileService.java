@@ -14,7 +14,7 @@ public interface FileService {
 
     public List<FileBean> getFilesByUid(String uid);
 
-    public List<FileBean> getFilesByType(String type);
+    public List<FileBean> getFilesByType(Integer type);
 
 
     public List<FileBean> getAllFiles();
@@ -39,5 +39,7 @@ public interface FileService {
      * @return
      */
     public List<UserInfo> getPeopleByWorkId(Integer wid);
+
+    public boolean isCollect(String uid,Integer wid);
 
 }

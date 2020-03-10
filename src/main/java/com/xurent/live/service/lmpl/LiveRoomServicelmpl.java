@@ -31,9 +31,18 @@ public class LiveRoomServicelmpl implements LiveRoomService {
     private AnchorDao anchorDao;
 
     @Override
+    public OutRoom getOutRoomByUserName(String username) {
+        LiveRoom r=liveRoomDao.getByUsername(username);
+        if(r==null)return null;
+        User u= userDao.getUserByUserName(username);
+
+        return GetRoom(r,u);
+    }
+
+    @Override
     public LiveRoom getRoomByUserName(String username) {
 
-        return liveRoomDao.getByUsername(username);
+      return liveRoomDao.getByUsername(username);
     }
 
     @Override
@@ -96,20 +105,26 @@ public class LiveRoomServicelmpl implements LiveRoomService {
         List<OutRoom> outRooms=new ArrayList<OutRoom>();
         for(LiveRoom r:lists){
             User u= userDao.getUserByUserName(r.getUsername());
-            OutRoom out=new OutRoom();
-            out.setOnline(r.getOnline());
-            out.setUsername(r.getUsername());
-            out.setTitle(r.getTitle());
-            out.setRoomImg(r.getRoomImg());
-            out.setAnnouncement(r.getAnnouncement());
-            out.setKind(r.getKind());
-            out.setState(r.getState());
-            out.setDate(r.getDate());
-            out.setId(r.getId());
-            out.setAnchorImg(u.getHeadImg());
-            out.setNickname(u.getNickName());
-            outRooms.add(out);
+            outRooms.add(GetRoom(r,u));
         }
         return  outRooms;
     }
+
+    private OutRoom GetRoom(LiveRoom r, User u){
+
+        OutRoom out=new OutRoom();
+        out.setOnline(r.getOnline());
+        out.setUsername(r.getUsername());
+        out.setTitle(r.getTitle());
+        out.setRoomImg(r.getRoomImg());
+        out.setAnnouncement(r.getAnnouncement());
+        out.setKind(r.getKind());
+        out.setState(r.getState());
+        out.setDate(r.getDate());
+        out.setId(r.getId());
+        out.setAnchorImg(u.getHeadImg());
+        out.setNickname(u.getNickName());
+        return out;
+    }
+
 }

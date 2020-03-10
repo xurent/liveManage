@@ -37,4 +37,9 @@ public interface AnchorDao extends JpaRepository<FocusAnchor,Integer> {
     @Query("select f from  FocusAnchor  f where f.uid=?1 and f.aid=?2 and f.type=1")
     public FocusAnchor isFoucus(String uid, String aid);
 
+
+    @Modifying
+    @Query("update FocusAnchor f set f.acoount=f.acoount+(?3) where  f.aid=?2 and f.uid=?1")
+    public void updateAcountByUidAndAid(String uid,String aid,long acount);
+
 }

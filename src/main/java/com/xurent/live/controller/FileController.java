@@ -12,12 +12,10 @@ import com.xurent.live.utils.CookieUtils;
 import com.xurent.live.utils.RedisUtil;
 import com.xurent.live.utils.UploadFileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -113,7 +111,12 @@ public class FileController {
 
     }
 
-
+    /**
+     *
+     * @param wid
+     * @param make  0取消，1关注
+     * @return
+     */
     @ResponseBody
     @GetMapping("/like")
     public Object collection(@RequestParam("workId") Integer wid,@RequestParam("make") Integer make){
@@ -129,6 +132,7 @@ public class FileController {
             works.setWorkId(f.getId());
             works.setCreateTime(new Date());
             fileService.Collection(works);
+            System.out.println(works.toString());
         }else if(make==0){
             //取消
             fileService.UnCollection(U.getUsername(),f.getId());
@@ -167,5 +171,53 @@ public class FileController {
         return  MessageData.ofSuccess("获取成功",files);
     }
 
+
+    /**
+     *
+     * @param workid
+     * @return  1已经关注，0未关注
+     */
+
+    @ResponseBody
+    @GetMapping("/iscollect")
+    public Object isCollect(@RequestParam("wid") Integer workid){
+
+       boolean exit= fileService.isCollect(iToken.getUserInfo().getUsername(),workid);
+
+       if(exit){
+           return  MessageData.ofSuccess("成功",1);
+       }
+
+        return  MessageData.ofSuccess("成功",0);
+    }
+
+    @ResponseBody
+    @GetMapping("/get_files_by_type")
+    public Object getFilesByType(@RequestParam("type") Integer type){
+
+       List<FileBean> fileBeans=  fileService.getFilesByType(type);
+
+        return  MessageData.ofSuccess("成功",fileBeans);
+    }
+
+
+    @ResponseBody
+    @GetMapping("/works_by_uid")
+    public Object getHer(@RequestParam("uid")String uid){
+
+        List<FileBean> files= fileService.getFilesByUid(uid);
+        System.out.println(files.size());
+        return  MessageData.ofSuccess("获取成功",files);
+    }
+
+    @ResponseBody
+    @GetMapping("/Herlikes")
+    public Object getCollectionHer(@RequestParam("uid")String uid){
+
+        List<FileBean> files= fileService.getCollectionsByUid(uid);
+        System.out.println(files.size());
+
+        return  MessageData.ofSuccess("获取成功",files);
+    }
 
 }

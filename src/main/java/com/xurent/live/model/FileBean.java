@@ -19,6 +19,7 @@ public class FileBean implements Serializable {
     private String userId; //用户ID
     private String nickName;//昵称
     private String fileName;
+    private String thumbleImg;//预览图
     private String  url;
     private Integer type; //  0图片  1 视频 2VR视频
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")

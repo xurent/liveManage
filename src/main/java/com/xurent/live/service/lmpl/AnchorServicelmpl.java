@@ -1,7 +1,9 @@
 package com.xurent.live.service.lmpl;
 
+import com.xurent.live.dao.AcountDao;
 import com.xurent.live.dao.AnchorDao;
 import com.xurent.live.dao.UserDao;
+import com.xurent.live.model.Acounnt;
 import com.xurent.live.model.FocusAnchor;
 import com.xurent.live.model.User;
 import com.xurent.live.model.out.OutFansInfo;
@@ -25,6 +27,10 @@ public class AnchorServicelmpl implements AnchorService {
 
     @Autowired
     private AnchorDao anchorDao;
+
+
+    @Autowired
+    private AcountDao acountDao;
 
     @Override
     public void Like(FocusAnchor anchor) {
@@ -92,6 +98,23 @@ public class AnchorServicelmpl implements AnchorService {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public long GiveAcount(String aid, String uid, long acount) {
+
+         Acounnt money= acountDao.getByUid(uid);
+        System.out.println("---???"+money.toString());
+         if(money.getAcount()>acount){
+             System.out.println("---ssss"+money.toString());
+             anchorDao.updateAcountByUidAndAid(uid,aid,acount);
+             System.out.println("---xxx"+money.toString());
+             acountDao.updateAcountByUid(uid,-acount);
+             System.out.println("---?"+money.toString());
+             return  (money.getAcount()-acount);
+         }
+
+        return -1;
     }
 
 
