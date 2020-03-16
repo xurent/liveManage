@@ -10,7 +10,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false
   servlet:
     multipart:
       enabled: true
@@ -35,5 +35,5 @@ liveDance:
   file:
     uploadpath:  /static/uploadfiles/
   bizId: 76466
-  key:
+  key: 744b392f328ffebcdda6f4ffb871a736
   playUrl: live.hexurong.xyz/live/

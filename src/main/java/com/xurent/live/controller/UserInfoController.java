@@ -9,6 +9,7 @@ import com.xurent.live.service.TokenService;
 import com.xurent.live.service.UserService;
 import com.xurent.live.utils.CookieUtils;
 import com.xurent.live.utils.RedisUtil;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 
 @RequestMapping("/liveDance")
 @Controller
+@Api(tags = "用户信息接口")
 public class UserInfoController {
 
 

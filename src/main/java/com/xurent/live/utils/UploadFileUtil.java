@@ -23,7 +23,7 @@ public class UploadFileUtil {
             }
             String path=rootpath.getAbsolutePath()+"/static/uploadfiles/"+name;
             switch (type){
-                case 0:  //默认
+                case 0:   //默认
                     //头像
                     break;
                 case 1:
@@ -41,15 +41,15 @@ public class UploadFileUtil {
             String file_Name=file.getOriginalFilename();
             int pointIndex = file_Name.indexOf(".");                        //点号的位置
             String fileSuffix = file_Name.substring(pointIndex);             //截取文件后缀
-            String newname=name+new Date().getTime();
-            String savedFileName =newname.toString().concat(fileSuffix);
-            File filepath = new File(path, savedFileName);
+            //String newname=name+new Date().getTime();
+            String savedFileName =file_Name.concat(fileSuffix);
+            File filepath = new File(path, file_Name);
             //判断路径是否存在，不存在则创建一个
             if (!filepath.getParentFile().exists()) {
                 filepath.getParentFile().mkdirs();//创建
             }
-            file.transferTo(filepath);//写进硬盘
-            path="http://"+request.getServerName()+":"+request.getLocalPort()+"/uploadfiles/"+name;
+            file.transferTo(filepath);//写进硬盘 liveDance
+            path="http://"+request.getServerName()+":"+request.getLocalPort()+"/liveDance/"+name;
             switch (type){
                 case 0:
                     path=path+"/"+filepath.getName();

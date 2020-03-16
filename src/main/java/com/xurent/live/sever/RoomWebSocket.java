@@ -81,10 +81,14 @@ public class RoomWebSocket {
 
         User user= (User) WSUtils.redisUtils.get(authcode);
 
-        sendMessage(10001,user.getNickName()+"进入房间",null,rooms.get(roomName),session);
+        sendMessage(10001,user.getNickName()+"进入房间",user.getUserName(),rooms.get(roomName),session);
         addOnlineCount();//在线数加1
         log.info("有一连接打开！当前在线人数为" + getOnlineCount());
-
+        if(roomName.equals(user.getUserName())){
+            //房主开播
+            System.out.println("主播开播");
+            SystemSocket.openLive(roomName);
+        }
 
     }
 

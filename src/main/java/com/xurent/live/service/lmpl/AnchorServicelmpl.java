@@ -104,13 +104,23 @@ public class AnchorServicelmpl implements AnchorService {
     public long GiveAcount(String aid, String uid, long acount) {
 
          Acounnt money= acountDao.getByUid(uid);
-        System.out.println("---???"+money.toString());
+            if(anchorDao.getByUidAndAid(uid,aid)==null){
+                FocusAnchor anchor=new FocusAnchor();
+                anchor.setAid(aid);
+                anchor.setUid(uid);
+                anchor.setDate(new Date());
+                anchor.setAcoount(0);
+                anchor.setType(0);
+                anchorDao.saveAndFlush(anchor);
+            }
+
          if(money.getAcount()>acount){
-             System.out.println("---ssss"+money.toString());
+
+
              anchorDao.updateAcountByUidAndAid(uid,aid,acount);
-             System.out.println("---xxx"+money.toString());
+
              acountDao.updateAcountByUid(uid,-acount);
-             System.out.println("---?"+money.toString());
+
              return  (money.getAcount()-acount);
          }
 

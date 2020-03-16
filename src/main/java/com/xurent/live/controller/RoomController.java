@@ -15,6 +15,7 @@ import com.xurent.live.service.*;
 import com.xurent.live.utils.LiveCodeUtil;
 import com.xurent.live.utils.RedisUtil;
 import com.xurent.live.utils.UploadFileUtil;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -29,6 +30,7 @@ import java.util.List;
 
 @RequestMapping("/live-room")
 @Controller
+@Api(tags = "房间接口")
 public class RoomController {
 
 
@@ -136,7 +138,6 @@ public class RoomController {
         List<LiveRoom> r= (List<LiveRoom>) redisUtil.get(Constants.REDIS_KIND_ROOM);
        LiveRoom room=liveRoomService.getRoomByUserName(iToken.getUserInfo().getUsername());
        if(room!=null){
-           SimpleDateFormat dateformat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
            room.setDate(new Date());
            room.setState(1);
 
